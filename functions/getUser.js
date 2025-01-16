@@ -15,10 +15,10 @@ exports.handler = async (event) => {
     const { id } = JSON.parse(event.body); // Parse the ID from the request body
 
     await client.connect();
-    const database = client.db("yourDatabaseName"); // Replace with your database name
-    const users = database.collection("users");
+    const database = client.db("yourDatabaseName"); // Replace with your actual database name
+    const collection = database.collection("Secure"); // Use the "Secure" collection
 
-    const user = await users.findOne({ id: id }); // Find user by ID
+    const user = await collection.findOne({ id: id }); // Find user by ID in the "Secure" collection
 
     if (user) {
       return {
