@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Iframe Loader with User ID</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .nav-buttons {
+            margin-bottom: 20px;
+        }
+        .nav-buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .nav-buttons button:hover {
+            background-color: #45a049;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Dynamic Iframe Loader with User ID</h2>
+
+    <label for="userId">Enter your ID:</label>
+    <input type="text" id="userId" placeholder="Enter your ID">
+    <button onclick="fetchUser()">Submit</button>
+
+    <div class="result" id="result"></div>
+
+    <div class="nav-buttons">
+        <button onclick="loadPage('Laws.html')" id="lawsBtn" style="display:none;">Laws</button>
+        <button onclick="loadPage('MB.html')" id="militaryBriefingBtn" style="display:none;">Military Briefing</button>
+        <button onclick="loadPage('ID.html')" id="idsBtn" style="display:none;">IDs</button>
+        <button onclick="loadPage('GI.html')" id="generalInfoBtn" style="display:none;">General Info</button>
+    </div>
+
+    <iframe id="contentFrame" src="" frameborder="0"></iframe>
+</div>
+
+<script>
+    async function fetchUser() {
+        const userId = document.getElementById("userId").value;
+        const resultDiv = document.getElementById("result");
+
+        try {
+            const response = await fetch('/.netlify/functions/getUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: userId })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                resultDiv.innerHTML = `Username: ${data.username}<br>Rank: ${data.rank}`;
+                toggleButtons(data.rank);
+            } else {
+                resultDiv.innerHTML = data.error || "An error occurred.";
+                toggleButtons(null); // Hide buttons if user not found
+            }
+        } catch (error) {
+            resultDiv.innerHTML = "An error occurred while fetching user data.";
+            console.error(error);
+        }
+    }
+
+    function toggleButtons(rank) {
+        const lawsBtn = document.getElementById("lawsBtn");
+        const militaryBriefingBtn = document.getElementById("militaryBriefingBtn");
+        const idsBtn = document.getElementById("idsBtn");
+        const generalInfoBtn = document.getElementById("generalInfoBtn");
+
+        lawsBtn.style.display = "none";
+        militaryBriefingBtn.style.display = "none";
+        idsBtn.style.display = "none";
+        generalInfoBtn.style.display = "none";
+
+        if (rank) {
+            if (rank.includes("Military")) militaryBriefingBtn.style.display = "inline-block";
+            if (rank.includes("ID")) idsBtn.style.display = "inline-block";
+            generalInfoBtn.style.display = "inline-block";
+            lawsBtn.style.display = "inline-block";
+        }
+    }
+
+    function loadPage(page) {
+        const iframe = document.getElementById("contentFrame");
+        iframe.src = page;
+    }
+</script>
+
+</body>
+</html>
