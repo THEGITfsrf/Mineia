@@ -81,7 +81,7 @@
         const resultDiv = document.getElementById("result");
 
         try {
-            const response = await fetch('/.netlify/functions/getUser', {
+            const response = await fetch('functions/getUser', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
