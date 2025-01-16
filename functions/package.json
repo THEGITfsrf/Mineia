@@ -1,0 +1,23 @@
+{
+  "name": "dynamic-iframe-loader",
+  "version": "1.0.0",
+  "description": "A dynamic iframe loader with user authentication and MongoDB integration",
+  "main": "index.js",
+  "scripts": {
+    "dev": "netlify dev", 
+    "build": "netlify build",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "mongodb": "^4.6.0", 
+    "netlify-cli": "^3.23.0" 
+  },
+  "devDependencies": {
+    "dotenv": "^10.0.0" 
+  },
+  "engines": {
+    "node": "14.x"
+  },
+  "author": "Mineia",
+  "license": "MIT"
+}
