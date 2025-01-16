@@ -77,32 +77,32 @@
 
 <script>
     async function fetchUser() {
-        const userId = document.getElementById("userId").value;
-        const resultDiv = document.getElementById("result");
+    const userId = document.getElementById("userId").value;
+    const resultDiv = document.getElementById("result");
 
-        try {
-            const response = await fetch('functions/getUser', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id: userId })
-            });
+    try {
+        const response = await fetch('/.netlify/functions/getUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: userId })
+        });
 
-            const data = await response.json();
+        const data = await response.json();
 
-            if (response.ok) {
-                resultDiv.innerHTML = `Username: ${data.username}<br>Rank: ${data.rank}`;
-                toggleButtons(data.rank);
-            } else {
-                resultDiv.innerHTML = data.error || "An error occurred.";
-                toggleButtons(null); // Hide buttons if user not found
-            }
-        } catch (error) {
-            resultDiv.innerHTML = "An error occurred while fetching user data.";
-            console.error(error);
+        if (response.ok) {
+            resultDiv.innerHTML = `Username: ${data.username}<br>Rank: ${data.rank}`;
+            toggleButtons(data.rank);
+        } else {
+            resultDiv.innerHTML = data.error || "An error occurred.";
+            toggleButtons(null); // Hide buttons if user not found
         }
+    } catch (error) {
+        resultDiv.innerHTML = "An error occurred while fetching user data.";
+        console.error(error);
     }
+}
 
     function toggleButtons(rank) {
         const lawsBtn = document.getElementById("lawsBtn");
