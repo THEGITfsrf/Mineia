@@ -1,43 +1,42 @@
 const { MongoClient } = require("mongodb");
 
-const uri = process.env.MONGO_URI; // Store this in Netlify's environment variables
-
+const uri = process.env.MONGODB_URI; // MongoDB URI stored as an environment variable
 const client = new MongoClient(uri);
 
-exports.handler = async (event, context) => {
-    if (event.httpMethod !== "POST") {
-        return {
-            statusCode: 405,
-            body: JSON.stringify({ error: "Method not allowed" }),
-        };
+exports.handler = async (event) => {
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: "Method not allowed" }),
+    };
+  }
+
+  try {
+    const { id } = JSON.parse(event.body); // Parse the ID from the request body
+
+    await client.connect();
+    const database = client.db("yourDatabaseName"); // Replace with your database name
+    const users = database.collection("users");
+
+    const user = await users.findOne({ id: id }); // Find user by ID
+
+    if (user) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ username: user.username, rank: user.rank }),
+      };
+    } else {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ error: "User not found" }),
+      };
     }
-
-    try {
-        const { hashedId } = JSON.parse(event.body);
-
-        await client.connect();
-        const database = client.db("users");
-        const collection = database.collection("userData");
-
-        const user = await collection.findOne({ _id: hashedId });
-
-        if (user) {
-            return {
-                statusCode: 200,
-                body: JSON.stringify({ success: true, user }),
-            };
-        } else {
-            return {
-                statusCode: 404,
-                body: JSON.stringify({ success: false, message: "User not found" }),
-            };
-        }
-    } catch (error) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ success: false, error: error.message }),
-        };
-    } finally {
-        await client.close();
-    }
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Internal server error" }),
+    };
+  } finally {
+    await client.close();
+  }
 };
